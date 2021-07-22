@@ -58,12 +58,6 @@ if (channel_id == None) or (slackbot_token == None):
 client = WebClient(token=slackbot_token)
 
 # ##############################
-# Scrum message here
-# ##############################
-current_date = date.today()
-scrum_msg = "Scrum for " + current_date.strftime("%B %d, %Y")
-
-# ##############################
 # Function will print msg to slack channel
 # ############################.##
 def print_to_channel(channel: str, msg: str) -> None:
@@ -162,6 +156,8 @@ def check_unreplied(channel_id: str, scrum_ts: str, users: dict) -> dict:
 
 if __name__ == "__main__": 
     # First we post the Scum post to the channel
+    current_date = date.today()
+    scrum_msg = "Scrum for " + current_date.strftime("%B %d, %Y")
     print_to_channel(channel_id, scrum_msg)
 
     # Sleep for a bit as it takes time for the data to be entered into the backend
