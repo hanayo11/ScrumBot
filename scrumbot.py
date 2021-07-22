@@ -57,7 +57,6 @@ if (channel_id == None) or (slackbot_token == None):
 
 client = WebClient(token=slackbot_token)
 
-
 # ##############################
 # Scrum message here
 # ##############################
