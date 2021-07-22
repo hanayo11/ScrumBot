@@ -44,19 +44,19 @@ except SystemExit as err:
     sys.exit(0)
 
 # ##############################
-# Scrum message here
-# ##############################
-current_date = date.today()
-scrum_msg = "Scrum for " + current_date.strftime("%B %d, %Y")
-
-# ##############################
-# Common Slack API Info
+# Common Slack Info
 # ##############################
 # Set to C028PJHLT42 as my own personal channel id for testing
 channel_id = os.environ.get("CHANNEL_ID") if options.channel == None else options.channel
 slackbot_token = os.environ.get("SLACK_BOT_TOKEN") if options.token == None else options.token
 client = WebClient(token=slackbot_token)
 logger = logging.getLogger(__name__)
+
+# ##############################
+# Scrum message here
+# ##############################
+current_date = date.today()
+scrum_msg = "Scrum for " + current_date.strftime("%B %d, %Y")
 
 # ##############################
 # Function will print msg to slack channel
