@@ -49,8 +49,14 @@ except SystemExit as err:
 # Set to C028PJHLT42 as my own personal channel id for testing
 channel_id = os.environ.get("CHANNEL_ID") if options.channel == None else options.channel
 slackbot_token = os.environ.get("SLACK_BOT_TOKEN") if options.token == None else options.token
-client = WebClient(token=slackbot_token)
 logger = logging.getLogger(__name__)
+
+if (channel_id == None) or (slackbot_token == None):
+    logger.error("ERROR: channel id and slack bot token must be set either through env variable, or as command line argument")
+    sys.exit(1)
+
+client = WebClient(token=slackbot_token)
+
 
 # ##############################
 # Scrum message here
@@ -174,7 +180,7 @@ if __name__ == "__main__":
     counter = 3
     remaining_unreplied = len(users_replied)
     while counter > 0 and remaining_unreplied > 0:
-        time.sleep(60)
+        time.sleep(10)
         print("Checking for unreplied")
         users_replied = check_unreplied(channel_id, scrum_ts, users_replied)
         remaining_unreplied = followup_unreplied(channel_id, scrum_ts, users_replied)
