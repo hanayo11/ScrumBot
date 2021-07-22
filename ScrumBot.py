@@ -34,7 +34,6 @@ parser = ArgumentParser()
 parser.add_argument('-t','--token', type=str, help="Slack bot token")
 parser.add_argument('-c','--channel', type=str, help="Channel id to print to")
 
-# Check if required options aren't passed in, if not throw an exception
 options = parser.parse_args()
 
 slackbot_token = os.environ.get("SLACK_BOT_TOKEN") if options.token == None else options.token
