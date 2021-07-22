@@ -60,20 +60,20 @@ client = WebClient(token=slackbot_token)
 # ##############################
 # Function will print msg to slack channel
 # ############################.##
-def print_to_channel(channel: str, msg: str) -> None:
+def print_to_channel(c_id: str, s_msg: str) -> None:
     """This will print a message to the desired slack channel"""
     try:
-        client.chat_postMessage(channel=channel_id, text=msg)
+        client.chat_postMessage(channel=c_id, text=s_msg)
     except SlackApiError as e:
         logger.error("Error posting message: {}".format(e))
         
 # ##############################
 # Get all users in a channel so we know who to bug
 # ##############################
-def get_users(channel_id: str) -> dict:
+def get_users(c_id: str) -> dict:
     """Get all users in a team"""
     try:
-        result = client.conversations_members(channel=channel_id)
+        result = client.conversations_members(channel=c_id)
         users_id = result["members"]
 
         result = client.users_list()
@@ -91,21 +91,21 @@ def get_users(channel_id: str) -> dict:
 # ##############################
 # Get the thread id of the last scrum post
 # ##############################
-def get_last_scrum_thread(channel_id: str, scrum_msg: str) -> str:
+def get_last_scrum_thread(c_id: str, s_msg: str) -> str:
     """Get thread id of the last scrum post by bot"""
     latest_range = datetime.now()
     latest_range_ts = time.mktime(latest_range.timetuple())
     oldest_range = datetime.now() - timedelta(hours=1)
     oldest_range_ts = time.mktime(oldest_range.timetuple())
     try:
-        result = client.conversations_history(channel=channel_id, latest=latest_range_ts, oldest=oldest_range_ts)
+        result = client.conversations_history(channel=c_id, latest=latest_range_ts, oldest=oldest_range_ts)
         conversation_history = result["messages"]
     except SlackApiError as e:
         logger.error("Error getting thread ts {}".format(e))
     
     last_scrum_post = ""
     for post in conversation_history:
-        if post['text'] == scrum_msg:
+        if post['text'] == s_msg:
             last_scrum_post = post['ts']
             break
     return last_scrum_post
@@ -113,7 +113,7 @@ def get_last_scrum_thread(channel_id: str, scrum_msg: str) -> str:
 # ##############################
 # Reply to thread with members who still have not responded to update
 # ##############################
-def followup_unreplied(channel_id: str, scrum_ts: str, users: dict) -> int:
+def followup_unreplied(c_id: str, s_ts: str, users: dict) -> int:
     """Replies to last scrum post with a follow up"""
     try:
         count = 0
@@ -125,10 +125,10 @@ def followup_unreplied(channel_id: str, scrum_ts: str, users: dict) -> int:
 
         if count > 0:
             chaser_text += "\n You still have not posted your daily scrum update, please do so now"
-            client.chat_postMessage(channel=channel_id, thread_ts=scrum_ts, text=chaser_text)
+            client.chat_postMessage(channel=c_id, thread_ts=s_ts, text=chaser_text)
         else:
             chaser_text = "SUCCESS: All users have posted their daily status update!"
-            client.chat_postMessage(channel=channel_id, thread_ts=scrum_ts, text=chaser_text)
+            client.chat_postMessage(channel=c_id, thread_ts=s_ts, text=chaser_text)
     except SlackApiError as e:
         logger.error("Error posting to thread: {}".format(e))
 
@@ -137,10 +137,10 @@ def followup_unreplied(channel_id: str, scrum_ts: str, users: dict) -> int:
 # ##############################
 # Get whoever has not replied with their status update
 # ##############################
-def check_unreplied(channel_id: str, scrum_ts: str, users: dict) -> dict:
+def check_unreplied(c_id: str, s_ts: str, users: dict) -> dict:
     """Get whoever has not posted their scrum update"""
     try:
-        results = client.conversations_replies(channel=channel_id, ts=scrum_ts)
+        results = client.conversations_replies(channel=c_id, ts=s_ts)
         thread_replies = results["messages"]
     except SlackApiError as e:
         logger.error("Error retrieving replies from thread: {}".format(e))
@@ -172,11 +172,11 @@ if __name__ == "__main__":
     # Then we have the bot follow up with whoever didn't 
     # Post their update after a certain amount of time
     users_replied = {x:0 for x in list_of_users}
-    counter = 3
+    count = 3
     remaining_unreplied = len(users_replied)
-    while counter > 0 and remaining_unreplied > 0:
+    while count > 0 and remaining_unreplied > 0:
         time.sleep(10)
         print("Checking for unreplied")
         users_replied = check_unreplied(channel_id, scrum_ts, users_replied)
         remaining_unreplied = followup_unreplied(channel_id, scrum_ts, users_replied)
-        counter -= 1
+        count -= 1
