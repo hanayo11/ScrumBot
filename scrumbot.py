@@ -22,6 +22,7 @@ import os
 import logging
 import time
 import re
+import sys
 from datetime import date, datetime, timedelta
 from argparse import ArgumentParser
 from slack_sdk import WebClient
@@ -34,7 +35,13 @@ parser = ArgumentParser()
 parser.add_argument('-t','--token', type=str, help="Slack bot token")
 parser.add_argument('-c','--channel', type=str, help="Channel id to print to")
 
-options = parser.parse_args()
+# Checks for required parameters and raises error if not passed in
+try:
+    options = parser.parse_args()
+except SystemExit as err:
+    if err.code == 2: 
+        parser.print_help()
+    sys.exit(0)
 
 slackbot_token = os.environ.get("SLACK_BOT_TOKEN") if options.token == None else options.token
 client = WebClient(token=slackbot_token)
@@ -50,7 +57,7 @@ scrum_msg = "Scrum for " + current_date.strftime("%B %d, %Y")
 # Common Slack API Info
 # ##############################
 # Set to C028PJHLT42 as my own personal channel id for testing
-channel_id = "C028PJHLT42" if options.channel == None else options.channel
+channel_id = os.environ.get("CHANNEL_ID") if options.channel == None else options.channel
 
 # ##############################
 # Function will print msg to slack channel
