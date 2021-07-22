@@ -34,7 +34,6 @@ parser = ArgumentParser()
 parser.add_argument('-t','--token', type=str, help="Slack bot token")
 parser.add_argument('-c','--channel', type=str, help="Channel id to print to")
 
-# Check if required options aren't passed in, if not throw an exception
 options = parser.parse_args()
 
 slackbot_token = os.environ.get("SLACK_BOT_TOKEN") if options.token == None else options.token
@@ -169,7 +168,7 @@ if __name__ == "__main__":
     counter = 3
     remaining_unreplied = len(users_replied)
     while counter > 0 and remaining_unreplied > 0:
-        time.sleep(10)
+        time.sleep(60)
         print("Checking for unreplied")
         users_replied = check_unreplied(channel_id, scrum_ts, users_replied)
         remaining_unreplied = followup_unreplied(channel_id, scrum_ts, users_replied)
