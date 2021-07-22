@@ -43,10 +43,6 @@ except SystemExit as err:
         parser.print_help()
     sys.exit(0)
 
-slackbot_token = os.environ.get("SLACK_BOT_TOKEN") if options.token == None else options.token
-client = WebClient(token=slackbot_token)
-logger = logging.getLogger(__name__)
-
 # ##############################
 # Scrum message here
 # ##############################
@@ -58,6 +54,9 @@ scrum_msg = "Scrum for " + current_date.strftime("%B %d, %Y")
 # ##############################
 # Set to C028PJHLT42 as my own personal channel id for testing
 channel_id = os.environ.get("CHANNEL_ID") if options.channel == None else options.channel
+slackbot_token = os.environ.get("SLACK_BOT_TOKEN") if options.token == None else options.token
+client = WebClient(token=slackbot_token)
+logger = logging.getLogger(__name__)
 
 # ##############################
 # Function will print msg to slack channel
